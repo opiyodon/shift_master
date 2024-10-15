@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shift_master/screens/loading_screen_dart.dart';
 import 'package:shift_master/services/firebase_service.dart';
 import 'package:shift_master/utils/theme.dart';
 
@@ -49,118 +50,131 @@ class RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
+    setState(() {
+      _isLoading = true;
+    });
+
     try {
       await _firebaseService.signInWithGoogle();
       Navigator.pushReplacementNamed(context, '/dashboard');
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 48),
-                const Text(
-                  'Shift Master',
-                  style: TextStyle(
-                    fontSize: 48,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Register your new account',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.person,
-                      size: 60, color: AppTheme.primaryColor),
-                ),
-                const SizedBox(height: 24),
-                _buildTextField(
-                    _firstNameController, "First Name", Icons.person),
-                const SizedBox(height: 16),
-                _buildTextField(_lastNameController, "Last Name", Icons.person),
-                const SizedBox(height: 16),
-                _buildTextField(_emailController, "Email", Icons.email),
-                const SizedBox(height: 16),
-                _buildTextField(_passwordController, "Password", Icons.lock,
-                    isPassword: true),
-                const SizedBox(height: 16),
-                _buildTextField(
-                    _confirmPasswordController, "Confirm Password", Icons.lock,
-                    isPassword: true),
-                const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: _register,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text(
-                          "SIGN UP",
-                          style: TextStyle(color: AppTheme.textColor2),
-                        ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  "Sign up with:",
-                  style: TextStyle(color: Colors.white),
-                ),
-                const SizedBox(height: 16),
-                Row(
+    return LoadingOverlay(
+        // Wrap the Scaffold with LoadingOverlay
+        isLoading: _isLoading,
+        loadingMessage: 'Creating account...',
+        child: Scaffold(
+          body: Container(
+            decoration: const BoxDecoration(gradient: AppTheme.primaryGradient),
+            child: SafeArea(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      icon: Image.asset('assets/images/google.png',
-                          width: 30, height: 30),
-                      onPressed: _signInWithGoogle,
+                    const SizedBox(height: 48),
+                    const Text(
+                      'Shift Master',
+                      style: TextStyle(
+                        fontSize: 48,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
                     ),
-                    IconButton(
-                      icon: Image.asset('assets/images/linkedin.png',
-                          width: 30, height: 30),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Register your new account',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    const CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.white,
+                      child: Icon(Icons.person,
+                          size: 60, color: AppTheme.primaryColor),
+                    ),
+                    const SizedBox(height: 24),
+                    _buildTextField(
+                        _firstNameController, "First Name", Icons.person),
+                    const SizedBox(height: 16),
+                    _buildTextField(
+                        _lastNameController, "Last Name", Icons.person),
+                    const SizedBox(height: 16),
+                    _buildTextField(_emailController, "Email", Icons.email),
+                    const SizedBox(height: 16),
+                    _buildTextField(_passwordController, "Password", Icons.lock,
+                        isPassword: true),
+                    const SizedBox(height: 16),
+                    _buildTextField(_confirmPasswordController,
+                        "Confirm Password", Icons.lock,
+                        isPassword: true),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: _register,
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator()
+                          : const Text(
+                              "SIGN UP",
+                              style: TextStyle(color: AppTheme.textColor2),
+                            ),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      "Sign up with:",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Image.asset('assets/images/google.png',
+                              width: 30, height: 30),
+                          onPressed: _signInWithGoogle,
+                        ),
+                        IconButton(
+                          icon: Image.asset('assets/images/linkedin.png',
+                              width: 30, height: 30),
+                          onPressed: () {
+                            // TODO: Implement Linkedin sign-up
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    TextButton(
                       onPressed: () {
-                        // TODO: Implement Linkedin sign-up
+                        Navigator.pushReplacementNamed(context, '/login');
                       },
+                      child: const Text(
+                        "Already have an account? Sign In",
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
+                    const SizedBox(height: 24),
                   ],
                 ),
-                const SizedBox(height: 24),
-                TextButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
-                  },
-                  child: const Text(
-                    "Already have an account? Sign In",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        ));
   }
 
   Widget _buildTextField(
