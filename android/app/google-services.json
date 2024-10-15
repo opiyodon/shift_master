@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "762107570744",
+    "project_id": "shift-master-1a66c",
+    "storage_bucket": "shift-master-1a66c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762107570744:android:430879e5249c2877e1d4cd",
+        "android_client_info": {
+          "package_name": "com.shiftmaster.shift_master"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "762107570744-etjp621mifoem332pdih6jjq2euh6hec.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.shiftmaster.shift_master",
+            "certificate_hash": "5fc6a5842919d704b5dfe2c381e96bdb1bbb47f9"
+          }
+        },
+        {
+          "client_id": "762107570744-dbpu61ce2dld88jvonlcqrg3v18facki.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZHjjMbIZfmuI3-hl2ReTdx-L_KpCK8UM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "762107570744-dbpu61ce2dld88jvonlcqrg3v18facki.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "762107570744-fmps4ffnelki4rcslshj23gumsldv7me.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.shiftmaster.shiftMaster"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
