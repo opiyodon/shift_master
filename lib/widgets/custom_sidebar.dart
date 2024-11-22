@@ -93,27 +93,27 @@ class _CustomSidebarState extends State<CustomSidebar> {
                   title: "Calendar Feeds",
                   route: '/calendar',
                 ),
-                _buildListTile(
-                  icon: Icons.sticky_note_2,
-                  title: "Notice Board",
-                  route: '/notice-board',
-                  badge: "12",
-                ),
-                _buildListTile(
-                  icon: Icons.report,
-                  title: "Reports",
-                  route: '/reports',
-                ),
-                _buildListTile(
-                  icon: Icons.notifications,
-                  title: "Notifications",
-                  route: '/notifications',
-                ),
-                _buildListTile(
-                  icon: Icons.settings,
-                  title: "Settings",
-                  route: '/settings',
-                ),
+                // _buildListTile(
+                //   icon: Icons.sticky_note_2,
+                //   title: "Notice Board",
+                //   route: '/notice-board',
+                //   badge: "12",
+                // ),
+                // _buildListTile(
+                //   icon: Icons.report,
+                //   title: "Reports",
+                //   route: '/reports',
+                // ),
+                // _buildListTile(
+                //   icon: Icons.notifications,
+                //   title: "Notifications",
+                //   route: '/notifications',
+                // ),
+                // _buildListTile(
+                //   icon: Icons.settings,
+                //   title: "Settings",
+                //   route: '/settings',
+                // ),
               ],
             ),
           ),
