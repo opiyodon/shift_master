@@ -1,26 +1,38 @@
-class ShiftModel {
-  String id;
+class ShiftData {
+  String? id; // Optional ID field
   String employeeId;
-  String startTime;
-  String endTime;
+  DateTime startTime;
+  DateTime endTime;
+  String status;
+  // Add other relevant fields
 
-  ShiftModel({required this.id, required this.employeeId, required this.startTime, required this.endTime});
+  ShiftData({
+    this.id,
+    required this.employeeId,
+    required this.startTime,
+    required this.endTime,
+    required this.status,
+  });
 
-  factory ShiftModel.fromFirestore(Map<String, dynamic> json) {
-    return ShiftModel(
-      id: json['id'],
-      employeeId: json['employeeId'],
-      startTime: json['startTime'],
-      endTime: json['endTime'],
-    );
-  }
-
-  Map<String, dynamic> toFirestore() {
+  // Convert ShiftData to a Map
+  Map<String, dynamic> toMap() {
     return {
       'id': id,
       'employeeId': employeeId,
-      'startTime': startTime,
-      'endTime': endTime,
+      'startTime': startTime.toIso8601String(),
+      'endTime': endTime.toIso8601String(),
+      'status': status,
     };
+  }
+
+  // Create ShiftData from a Map
+  factory ShiftData.fromMap(Map<String, dynamic> map) {
+    return ShiftData(
+      id: map['id'],
+      employeeId: map['employeeId'],
+      startTime: DateTime.parse(map['startTime']),
+      endTime: DateTime.parse(map['endTime']),
+      status: map['status'],
+    );
   }
 }

@@ -3,7 +3,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shift_master/services/firestore_service.dart';
 
 class FirebaseService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirestoreService _firestoreService = FirestoreService();
 
@@ -18,7 +18,7 @@ class FirebaseService {
       }
 
       UserCredential userCredential =
-          await _auth.createUserWithEmailAndPassword(
+          await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -40,7 +40,7 @@ class FirebaseService {
   // Login user
   Future<User?> login(String email, String password) async {
     try {
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      UserCredential userCredential = await auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -53,7 +53,7 @@ class FirebaseService {
   // Send password reset email
   Future<void> sendPasswordResetEmail(String email) async {
     try {
-      await _auth.sendPasswordResetEmail(email: email);
+      await auth.sendPasswordResetEmail(email: email);
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -73,7 +73,7 @@ class FirebaseService {
       );
 
       UserCredential userCredential =
-          await _auth.signInWithCredential(credential);
+          await auth.signInWithCredential(credential);
 
       // Check if user exists in Firestore, if not, create a new user
       bool userExists =
@@ -95,13 +95,13 @@ class FirebaseService {
 
   // Logout user
   Future<void> logout() async {
-    await _auth.signOut();
+    await auth.signOut();
     await _googleSignIn.signOut();
     // Add LinkedIn logout if necessary
   }
 
   // Check if user is logged in
   bool isUserLoggedIn() {
-    return _auth.currentUser != null;
+    return auth.currentUser != null;
   }
 }

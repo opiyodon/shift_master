@@ -5,6 +5,7 @@ class AppTheme {
   static const Color secondaryColor = Color(0xFF003459);
   static const Color accentColor = Color(0xFFFF6B6B);
   static const Color backgroundColor = Color(0xFF007EA7);
+  static Color? backgroundColor2 = Colors.grey[200];
   static const Color textColor = Color(0xFF003459);
   static const Color textColor2 = Colors.white;
 
