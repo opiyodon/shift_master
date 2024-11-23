@@ -124,10 +124,14 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen> {
       return;
     }
 
-    if (_employees.isEmpty) {
+    // Filter employees to only include those with role 'employee'
+    final nonAdminEmployees =
+        _employees.where((emp) => emp.role == 'employee').toList();
+
+    if (nonAdminEmployees.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No employees available to create shifts'),
+          content: Text('No non-admin employees available to create shifts'),
           backgroundColor: AppTheme.accentColor,
         ),
       );
@@ -139,7 +143,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen> {
     });
 
     try {
-      for (var employee in _employees) {
+      for (var employee in nonAdminEmployees) {
         DateTime now = DateTime.now();
         DateTime shiftStart = DateTime(
           now.year,
@@ -162,7 +166,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Automatic shifts generated for ${_employees.length} employees',
+              'Automatic shifts generated for ${nonAdminEmployees.length} employees',
             ),
             backgroundColor: AppTheme.primaryColor,
           ),
@@ -291,12 +295,15 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen> {
                       itemCount: shifts.length,
                       itemBuilder: (context, index) {
                         ShiftData shift = shifts[index];
-                        Employee? employee = _employees.firstWhere(
-                          (e) => e.id == shift.employeeId,
+                        Employee employee = _employees.firstWhere(
+                              (e) => e.id == shift.employeeId,
                           orElse: () => Employee(
                             id: '',
                             name: 'Unknown Employee',
                             email: 'unknown@example.com',
+                            role: 'employee',
+                            department: '',
+                            position: '',
                           ),
                         );
 
@@ -319,6 +326,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen> {
                           child: ShiftCard(
                             shift: shift,
                             employeeName: employee.name,
+                            employee: employee, // Pass the full employee object
                             onDelete: () => _deleteShift(shift.id!),
                           ),
                         );
@@ -372,6 +380,10 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen> {
   }
 
   void _showCreateShiftDialog() {
+    // Filter out admin employees
+    final nonAdminEmployees =
+        _employees.where((emp) => emp.role == 'employee').toList();
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -397,7 +409,7 @@ class _ShiftManagementScreenState extends State<ShiftManagementScreen> {
                   labelStyle: TextStyle(color: AppTheme.primaryColor),
                 ),
                 value: _selectedEmployeeId,
-                items: _employees.map((e) {
+                items: nonAdminEmployees.map((e) {
                   return DropdownMenuItem<String>(
                     value: e.id,
                     child: Text(e.name),

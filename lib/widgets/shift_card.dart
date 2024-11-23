@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:shift_master/utils/theme.dart';
+import 'package:shift_master/models/employee_model.dart';
 import 'package:shift_master/models/shift_model.dart';
+import 'package:shift_master/utils/theme.dart';
+import 'package:shift_master/widgets/shift_details_modal.dart';
 
 class ShiftCard extends StatefulWidget {
   final ShiftData shift;
   final String employeeName;
   final VoidCallback onDelete;
+  final Employee employee;
 
   const ShiftCard({
     super.key,
     required this.shift,
     required this.employeeName,
     required this.onDelete,
+    required this.employee,
   });
 
   @override
@@ -19,37 +23,37 @@ class ShiftCard extends StatefulWidget {
 }
 
 class _ShiftCardState extends State<ShiftCard> {
+  String _formatDateTime(DateTime dateTime) {
+    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  }
+
   @override
   Widget build(BuildContext context) {
-    String formattedStartTime =
-        "${widget.shift.startTime.hour.toString().padLeft(2, '0')}:${widget.shift.startTime.minute.toString().padLeft(2, '0')}";
-    String formattedEndTime =
-        "${widget.shift.endTime.hour.toString().padLeft(2, '0')}:${widget.shift.endTime.minute.toString().padLeft(2, '0')}";
-
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.white, Color(0xFFF5F5F5)],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppTheme.secondaryColor.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+      margin: const EdgeInsets.only(bottom: 12),
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(
+            color: Colors.grey.withOpacity(0.1),
+            width: 1,
           ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
+        ),
+        color: Colors.white,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {}, // Optional: Add onTap functionality
+          onTap: () {
+            showDialog(
+              context: context,
+              builder: (context) => ShiftDetailsModal(
+                shift: widget.shift,
+                employee: widget.employee,
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(12),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16),
             child: Row(
               children: [
                 Container(
@@ -60,61 +64,84 @@ class _ShiftCardState extends State<ShiftCard> {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        widget.employeeName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.secondaryColor,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            widget.employeeName,
+                            style: const TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textColor,
+                            ),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppTheme.accentColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.delete_outline,
+                                size: 20,
+                                color: AppTheme.accentColor,
+                              ),
+                              onPressed: widget.onDelete,
+                              padding: const EdgeInsets.all(4),
+                              style: IconButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              constraints: const BoxConstraints(),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.access_time,
-                            size: 16,
-                            color: AppTheme.primaryColor,
+                            size: 14,
+                            color: Colors.grey[600],
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '$formattedStartTime - $formattedEndTime',
+                            '${_formatDateTime(widget.shift.startTime)} - ${_formatDateTime(widget.shift.endTime)}',
                             style: TextStyle(
                               fontSize: 14,
-                              color: AppTheme.textColor.withOpacity(0.8),
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          const Spacer(),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryColor.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Text(
+                              'AUTOMATICALLY GENERATED',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w500,
+                                color: AppTheme.primaryColor,
+                              ),
                             ),
                           ),
                         ],
                       ),
                     ],
-                  ),
-                ),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(50),
-                    onTap: widget.onDelete,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        height: 35,
-                        width: 35,
-                        decoration: BoxDecoration(
-                          color: AppTheme.accentColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                        child: const Icon(
-                          Icons.delete_outline,
-                          color: AppTheme.accentColor,
-                          size: 20,
-                        ),
-                      ),
-                    ),
                   ),
                 ),
               ],
