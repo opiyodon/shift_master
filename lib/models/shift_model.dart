@@ -1,10 +1,27 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ShiftData {
-  String? id; // Optional ID field
-  String employeeId;
-  DateTime startTime;
-  DateTime endTime;
-  String status;
-  // Add other relevant fields
+  final String? id;
+  final String employeeId;
+  final DateTime startTime;
+  final DateTime endTime;
+  final String status;
+  final String department;
+  final String position;
+  final String? shiftType;
+  final DateTime? weekStart;
+
+  // Add computed property for shift status
+  String get shiftStatus {
+    final now = DateTime.now();
+    if (now.isBefore(startTime)) {
+      return 'Pending';
+    } else if (now.isAfter(endTime)) {
+      return 'Completed';
+    } else {
+      return 'Active';
+    }
+  }
 
   ShiftData({
     this.id,
@@ -12,27 +29,38 @@ class ShiftData {
     required this.startTime,
     required this.endTime,
     required this.status,
+    this.department = '',
+    this.position = '',
+    this.shiftType,
+    this.weekStart,
   });
 
-  // Convert ShiftData to a Map
   Map<String, dynamic> toMap() {
     return {
-      'id': id,
       'employeeId': employeeId,
-      'startTime': startTime.toIso8601String(),
-      'endTime': endTime.toIso8601String(),
+      'startTime': startTime,
+      'endTime': endTime,
       'status': status,
+      'department': department,
+      'position': position,
+      'shiftType': shiftType,
+      'weekStart': weekStart,
     };
   }
 
-  // Create ShiftData from a Map
-  factory ShiftData.fromMap(Map<String, dynamic> map) {
+  static ShiftData fromMap(String id, Map<String, dynamic> map) {
     return ShiftData(
-      id: map['id'],
-      employeeId: map['employeeId'],
-      startTime: DateTime.parse(map['startTime']),
-      endTime: DateTime.parse(map['endTime']),
-      status: map['status'],
+      id: id,
+      employeeId: map['employeeId'] ?? '',
+      startTime: (map['startTime'] as Timestamp).toDate(),
+      endTime: (map['endTime'] as Timestamp).toDate(),
+      status: map['status'] ?? '',
+      department: map['department'] ?? '',
+      position: map['position'] ?? '',
+      shiftType: map['shiftType'],
+      weekStart: map['weekStart'] != null
+          ? (map['weekStart'] as Timestamp).toDate()
+          : null,
     );
   }
 }

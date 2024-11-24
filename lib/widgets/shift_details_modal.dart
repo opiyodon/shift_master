@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shift_master/models/employee_model.dart';
 import 'package:shift_master/models/shift_model.dart';
+import 'package:shift_master/utils/theme.dart';
 
 class ShiftDetailsModal extends StatelessWidget {
   final ShiftData shift;
@@ -13,157 +14,204 @@ class ShiftDetailsModal extends StatelessWidget {
   });
 
   String _formatDateTime(DateTime dateTime) {
-    return '${dateTime.day}/${dateTime.month}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+    final dateToCheck = DateTime(dateTime.year, dateTime.month, dateTime.day);
+
+    // Format time
+    final hour = dateTime.hour;
+    final minute = dateTime.minute;
+    final period = hour >= 12 ? 'PM' : 'AM';
+    final displayHour = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
+    final formattedTime =
+        '${displayHour.toString()}:${minute.toString().padLeft(2, '0')} $period';
+
+    // Format date based on conditions
+    String formattedDate;
+    if (dateToCheck == today) {
+      formattedDate = 'Today';
+    } else if (dateToCheck == yesterday) {
+      formattedDate = 'Yesterday';
+    } else {
+      // Format date for dates beyond yesterday
+      final List<String> months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec'
+      ];
+      formattedDate =
+          '${dateTime.day} ${months[dateTime.month - 1]} ${dateTime.year}';
+    }
+
+    return '$formattedDate at $formattedTime';
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
+  Widget _buildDetailField({
+    required String label,
+    required String value,
+    required IconData icon,
+  }) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: BoxDecoration(
+        color: AppTheme.backgroundColor2,
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Container(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Shift Details',
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 24),
-            
-            // Employee Details Section
-            _DetailItem(
-              icon: Icons.person,
-              label: 'Name',
-              value: employee.name,
-            ),
-            const SizedBox(height: 16),
-            
-            _DetailItem(
-              icon: Icons.email,
-              label: 'Email',
-              value: employee.email,
-            ),
-            const SizedBox(height: 16),
-            
-            _DetailItem(
-              icon: Icons.business,
-              label: 'Department',
-              value: employee.department,
-            ),
-            const SizedBox(height: 16),
-            
-            _DetailItem(
-              icon: Icons.work,
-              label: 'Position',
-              value: employee.position,
-            ),
-            const SizedBox(height: 16),
-            
-            _DetailItem(
-              icon: Icons.badge,
-              label: 'Role',
-              value: employee.role,
-            ),
-            const SizedBox(height: 24),
-            
-            // Shift Time Details
-            Text(
-              'Shift Time',
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            
-            _DetailItem(
-              icon: Icons.access_time,
-              label: 'Start Time',
-              value: _formatDateTime(shift.startTime),
-            ),
-            const SizedBox(height: 16),
-            
-            _DetailItem(
-              icon: Icons.access_time_filled,
-              label: 'End Time',
-              value: _formatDateTime(shift.endTime),
-            ),
-            const SizedBox(height: 16),
-            
-            _DetailItem(
-              icon: Icons.info,
-              label: 'Status',
-              value: shift.status,
-            ),
-            const SizedBox(height: 24),
-            
-            // Close Button
-            SizedBox(
-              width: double.infinity,
-              child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.red,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(
+        children: [
+          Icon(icon, color: AppTheme.primaryColor, size: 24),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    color: AppTheme.textColor,
+                    fontSize: 14,
+                  ),
                 ),
-                child: const Text('Close'),
-              ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    color: AppTheme.textColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-}
-
-class _DetailItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _DetailItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(
-          icon,
-          size: 24,
-          color: Colors.blue,
-        ),
-        const SizedBox(width: 16),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.grey,
-                fontSize: 14,
-              ),
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.95,
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Shift Details',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textColor,
+                  ),
+                ),
+                const SizedBox(height: 32),
+
+                // Employee Details
+                _buildDetailField(
+                  label: 'Name',
+                  value: employee.name,
+                  icon: Icons.person_outline,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailField(
+                  label: 'Email',
+                  value: employee.email,
+                  icon: Icons.email_outlined,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailField(
+                  label: 'Department',
+                  value: employee.department,
+                  icon: Icons.business_outlined,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailField(
+                  label: 'Position',
+                  value: employee.position,
+                  icon: Icons.work_outline,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailField(
+                  label: 'Role',
+                  value: employee.role,
+                  icon: Icons.admin_panel_settings_outlined,
+                ),
+                const SizedBox(height: 32),
+
+                // Shift Time Details
+                const Text(
+                  'Shift Time',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textColor,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                _buildDetailField(
+                  label: 'Start Time',
+                  value: _formatDateTime(shift.startTime),
+                  icon: Icons.access_time_outlined,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailField(
+                  label: 'End Time',
+                  value: _formatDateTime(shift.endTime),
+                  icon: Icons.access_time_filled,
+                ),
+                const SizedBox(height: 16),
+                _buildDetailField(
+                  label: 'Status',
+                  value: shift.status,
+                  icon: Icons.info_outline,
+                ),
+                const SizedBox(height: 32),
+
+                // Close Button
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text(
+                      'Close',
+                      style: TextStyle(
+                        color: AppTheme.accentColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }

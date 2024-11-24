@@ -37,7 +37,7 @@ class FirestoreService {
     try {
       // Generate password
       String password =
-          PasswordGenerator.generatePassword(employee.name, employee.email);
+      PasswordGenerator.generatePassword(employee.name, employee.email);
 
       // Create authentication account
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
@@ -60,9 +60,9 @@ class FirestoreService {
 
       // Save employee data to Firestore
       await db.collection('employees').doc(authUserId).set(
-            employeeWithId.toMap(),
-            SetOptions(merge: true),
-          );
+        employeeWithId.toMap(),
+        SetOptions(merge: true),
+      );
 
       return password;
     } catch (e) {
@@ -80,7 +80,7 @@ class FirestoreService {
       if (currentUser == null) return false;
 
       final userDoc =
-          await db.collection('employees').doc(currentUser.uid).get();
+      await db.collection('employees').doc(currentUser.uid).get();
 
       return userDoc.exists && userDoc.data()?['role'] == 'admin';
     } catch (e) {
@@ -210,9 +210,24 @@ class FirestoreService {
     }
   }
 
+  Future<void> clearAllShifts() async {
+    WriteBatch batch = db.batch();
+
+    // Get all shifts
+    QuerySnapshot shiftsSnapshot = await db.collection('shifts').get();
+
+    // Add delete operations to batch
+    for (var doc in shiftsSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    // Commit the batch
+    await batch.commit();
+  }
+
   Stream<List<ShiftData>> getShifts() {
     return db.collection('shifts').snapshots().map((snapshot) => snapshot.docs
-        .map((doc) => ShiftData.fromMap({...doc.data(), 'id': doc.id}))
+        .map((doc) => ShiftData.fromMap(doc.id, doc.data()))
         .toList());
   }
 }
