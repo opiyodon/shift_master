@@ -298,7 +298,8 @@ class ShiftManagementScreenState extends State<ShiftManagementScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Text(
                   'Department: ${entry.key}',
                   style: theme.textTheme.titleMedium?.copyWith(
@@ -309,7 +310,7 @@ class ShiftManagementScreenState extends State<ShiftManagementScreen> {
               ),
               ...entry.value.map((shift) {
                 Employee employee = _employees.firstWhere(
-                      (e) => e.id == shift.employeeId,
+                  (e) => e.id == shift.employeeId,
                   orElse: () => Employee(
                     id: '',
                     name: 'Unknown Employee',
@@ -378,9 +379,8 @@ class ShiftManagementScreenState extends State<ShiftManagementScreen> {
                               ? const SizedBox(
                                   width: 20,
                                   height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                                  child: LoadingScreen(
+                                    message: 'Loading shifts...',
                                   ),
                                 )
                               : const Icon(Icons.auto_fix_high,
@@ -435,7 +435,8 @@ class ShiftManagementScreenState extends State<ShiftManagementScreen> {
                     child: StreamBuilder<List<ShiftData>>(
                       stream: _firestoreService.getShifts(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(
                               color: AppTheme.primaryColor,
@@ -459,7 +460,8 @@ class ShiftManagementScreenState extends State<ShiftManagementScreen> {
                         // Group shifts by week
                         Map<DateTime, List<ShiftData>> weeklyShifts = {};
                         for (var shift in allShifts) {
-                          DateTime weekStart = shift.weekStart ?? _getWeekStart(shift.startTime);
+                          DateTime weekStart =
+                              shift.weekStart ?? _getWeekStart(shift.startTime);
                           if (!weeklyShifts.containsKey(weekStart)) {
                             weeklyShifts[weekStart] = [];
                           }
@@ -475,7 +477,8 @@ class ShiftManagementScreenState extends State<ShiftManagementScreen> {
                           itemCount: sortedWeeks.length,
                           itemBuilder: (context, index) {
                             DateTime weekStart = sortedWeeks[index];
-                            String weekLabel = 'Week of ${weekStart.month}/${weekStart.day}/${weekStart.year}';
+                            String weekLabel =
+                                'Week of ${weekStart.month}/${weekStart.day}/${weekStart.year}';
                             return _buildWeeklyShiftGroup(
                               weeklyShifts[weekStart]!,
                               weekLabel,

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shift_master/models/employee_model.dart';
+import 'package:shift_master/models/report_model.dart';
 import 'package:shift_master/models/shift_model.dart';
 import 'package:shift_master/utils/password_generator.dart';
 
@@ -37,7 +38,7 @@ class FirestoreService {
     try {
       // Generate password
       String password =
-      PasswordGenerator.generatePassword(employee.name, employee.email);
+          PasswordGenerator.generatePassword(employee.name, employee.email);
 
       // Create authentication account
       UserCredential userCredential = await auth.createUserWithEmailAndPassword(
@@ -60,9 +61,9 @@ class FirestoreService {
 
       // Save employee data to Firestore
       await db.collection('employees').doc(authUserId).set(
-        employeeWithId.toMap(),
-        SetOptions(merge: true),
-      );
+            employeeWithId.toMap(),
+            SetOptions(merge: true),
+          );
 
       return password;
     } catch (e) {
@@ -80,7 +81,7 @@ class FirestoreService {
       if (currentUser == null) return false;
 
       final userDoc =
-      await db.collection('employees').doc(currentUser.uid).get();
+          await db.collection('employees').doc(currentUser.uid).get();
 
       return userDoc.exists && userDoc.data()?['role'] == 'admin';
     } catch (e) {
@@ -229,5 +230,47 @@ class FirestoreService {
     return db.collection('shifts').snapshots().map((snapshot) => snapshot.docs
         .map((doc) => ShiftData.fromMap(doc.id, doc.data()))
         .toList());
+  }
+
+  Future<String> saveReport({
+    required String type,
+    required DateTime startDate,
+    required DateTime endDate,
+    required bool fileUrl,
+    required int totalRecords,
+  }) async {
+    try {
+      final reportRef = await db.collection('reports').add({
+        'type': type,
+        'startDate': startDate,
+        'endDate': endDate,
+        'generatedAt': FieldValue.serverTimestamp(),
+        'fileUrl': fileUrl,
+        'totalRecords': totalRecords,
+      });
+      return reportRef.id;
+    } catch (e) {
+      print('Error saving report: $e');
+      rethrow;
+    }
+  }
+
+  Stream<List<Report>> getReports() {
+    return db
+        .collection('reports')
+        .orderBy('generatedAt', descending: true)
+        .snapshots()
+        .map((snapshot) => snapshot.docs
+            .map((doc) => Report.fromMap(doc.id, doc.data()))
+            .toList());
+  }
+
+  Future<void> deleteReport(String reportId) async {
+    try {
+      await db.collection('reports').doc(reportId).delete();
+    } catch (e) {
+      print('Error deleting report: $e');
+      rethrow;
+    }
   }
 }

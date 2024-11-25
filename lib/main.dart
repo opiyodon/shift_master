@@ -4,10 +4,8 @@ import 'package:shift_master/firebase_options.dart';
 import 'package:shift_master/screens/dashboard_screen.dart';
 import 'package:shift_master/screens/employee_management_screen.dart';
 import 'package:shift_master/screens/login_screen.dart';
-import 'package:shift_master/screens/notification_screen.dart';
 import 'package:shift_master/screens/register_screen.dart';
 import 'package:shift_master/screens/report_screen.dart';
-import 'package:shift_master/screens/settings_screen.dart';
 import 'package:shift_master/screens/shift_management_screen.dart';
 import 'package:shift_master/screens/splash_screen.dart';
 import 'package:shift_master/utils/theme.dart';
@@ -41,9 +39,7 @@ class ShiftMasterApp extends StatelessWidget {
         '/dashboard': (context) => const DashboardScreen(),
         '/shifts': (context) => const ShiftManagementScreen(),
         '/employees': (context) => const EmployeeManagementScreen(),
-        '/reports': (context) => const ReportScreen(),
-        '/notifications': (context) => const NotificationScreen(),
-        '/settings': (context) => const SettingsScreen(),
+        '/reports': (context) => const ReportsScreen(),
       },
     );
   }
